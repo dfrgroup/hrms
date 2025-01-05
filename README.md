@@ -114,7 +114,7 @@ This project is licensed under the GNU General Public License v3.0 License. See 
 
 ## Contact
 
-For questions or support, contact [omar.7tech@gmail.com](mailto:omar.7tech@gmail.com).
+For questions or support, contact [anthony@dfrgrp.com](mailto:anthony@dfrgrp.com).
 
 ## Live Demo
 
