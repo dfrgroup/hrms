@@ -38,7 +38,12 @@ The HRMS (Human Resource Management System) is a php-based application designed 
     npm install
     npm run dev
     ```
-3. Setup environment variables:
+3. Set Initial App Config:
+Update the config/app.php app configuration file to the following:
+    ```sh
+    env => production,
+    debug => false,  // Set to false in production
+    ```
 
 4. Migrate the database:
 
