@@ -64,13 +64,20 @@ class LoginController
 
         try {
             // 1. Check if domain is blocked
-            $this->logError("Checking domain blockage for email: {$email}");
-            $domainBlocked = $this->userModel->isDomainBlocked($email);
+            try {
+                $domainBlocked = $this->userModel->isDomainBlocked($email);
+            } catch (\Exception $e) {
+                $this->logError("Exception in isDomainBlocked: " . $e->getMessage());
+                return ['success' => false, 'message' => 'An error occurred while checking the email domain.'];
+            }
+            
             if ($domainBlocked) {
                 $this->logError("Domain is blocked for email: {$email}");
                 $this->userModel->logLoginAttempt(null, $ip, 'BlockedDomain', 'Failed');
                 return ['success' => false, 'message' => 'Login blocked: your email domain is blocked'];
             }
+            
+            
 
             // 2. Check IP blocking
             $this->logError("Checking IP blocking for IP: {$ip}");
