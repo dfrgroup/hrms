@@ -21,7 +21,7 @@
 class database {
     // Database credentials
     private $host = "localhost";
-    private $db_name = "hr";
+    private $db_name = "hrms";
     private $username = "root";
     private $password = "";
     public $conn;

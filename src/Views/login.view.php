@@ -79,7 +79,7 @@
         <!-- Login Form -->
         <form 
           class="space-y-6"
-          action="/process-login" 
+          action="/login" 
           method="POST" 
           novalidate
         >
