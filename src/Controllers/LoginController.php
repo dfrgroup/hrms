@@ -55,4 +55,6 @@ class LoginController
         // 3. All good—user is authenticated
         return ['success' => true, 'message' => 'Login successful'];
     }
+
+
 }

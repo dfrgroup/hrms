@@ -1,3 +1,14 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// If the user is already logged in, redirect to the dashboard
+if (!empty($_SESSION['user_id'])) {
+    header('Location: /dashboard');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
