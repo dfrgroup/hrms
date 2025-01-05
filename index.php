@@ -32,19 +32,20 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Initialize Models and Controllers
-$userModel = new User($pdo);
-$loginController = new LoginController($userModel);
-$userController = new UserController($userModel);
+$userModel        = new User($pdo);
+$loginController  = new LoginController($userModel);
+$userController   = new UserController($userModel);
 
 // Fetch the Logged-In User Details
 $loggedInUser = UserHelper::getLoggedInUserDetails($userModel);
 
 // Routing Logic
-$requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+$requestUri    = $_SERVER['REQUEST_URI']    ?? '/';
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 switch ($requestUri) {
     case '/':
+        // Redirect to /login if not authenticated, otherwise /dashboard
         if (empty($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
@@ -53,14 +54,15 @@ switch ($requestUri) {
         exit;
 
     case '/login':
+        // Handle login
         if ($requestMethod === 'POST') {
-            $email = $_POST['email'] ?? '';
+            $email    = $_POST['email']    ?? '';
             $password = $_POST['password'] ?? '';
             $response = $loginController->login($email, $password);
 
             if ($response['success']) {
-                $userData = $userModel->findUserByEmail($email);
-                $_SESSION['user_id'] = $userData['id'] ?? null;
+                $userData             = $userModel->findUserByEmail($email);
+                $_SESSION['user_id']  = $userData['id'] ?? null;
                 header('Location: /dashboard');
                 exit;
             } else {
@@ -69,6 +71,7 @@ switch ($requestUri) {
                 exit;
             }
         } else {
+            // Show the login form
             $errorMessage = $_SESSION['login_error'] ?? null;
             unset($_SESSION['login_error']);
             require __DIR__ . '/src/Views/login.view.php';
@@ -76,22 +79,23 @@ switch ($requestUri) {
         break;
 
     case '/dashboard':
+        // Must be logged in
         if (empty($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
         }
-        $userId = $_SESSION['user_id'];
+        $userId      = $_SESSION['user_id'];
         $userDetails = $userModel->findUserById($userId);
 
         if (!$userDetails) {
             echo "Error: User not found.";
             exit;
         }
-
         require __DIR__ . '/src/Views/dashboard.view.php';
         break;
 
     case '/all-users':
+        // Must be logged in
         if (empty($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
@@ -100,65 +104,55 @@ switch ($requestUri) {
         require __DIR__ . '/src/Views/Auth/allusers.view.php';
         break;
 
-        // Example route that matches URLs like /edit-user/123
-case (preg_match('#^/edit-user/(\d+)$#', $requestUri, $matches) ? true : false):
-    if (empty($_SESSION['user_id'])) {
-        header('Location: /login');
-        exit;
-    }
-    
-    // Extract the user ID from the matched route
-    $userId = $matches[1];
-
-    // Fetch user details by ID
-    $userDetails = $userModel->findUserById($userId);
-    if (!$userDetails) {
-        echo "Error: User not found.";
-        exit;
-    }
-
-    // Handle GET or POST if you want
-    if ($requestMethod === 'POST') {
-        // For example, update the user
-        // $userController->updateUser($userId, $_POST);
-        // Then redirect or show a success message
-    } else {
-        // Show edit form
-        require __DIR__ . '/src/Views/Auth/edituser.view.php';
-    }
-    break;
-
-
-
-    // Example route that matches URLs like /edit-user/123
-case (preg_match('#^/Auth/ViewUser/(\d+)$#', $requestUri, $matches) ? true : false):
-    if (empty($_SESSION['user_id'])) {
-        header('Location: /login');
-        exit;
-    }
-    
-    // Extract the user ID from the matched route
-    $userId = $matches[1];
-
-    // Fetch user details by ID
-    $userDetails = $userModel->findUserById($userId);
-    if (!$userDetails) {
-        echo "Error: User not found.";
-        exit;
-    }
-
-    // Handle GET or POST if you want
-    if ($requestMethod === 'POST') {
-        // For example, update the user
-        // $userController->updateUser($userId, $_POST);
-        // Then redirect or show a success message
-    } else {
-        // Show edit form
-        require __DIR__ . '/src/Views/Auth/ViewUser.php';
-    }
-    break;
     default:
-        http_response_code(404);
-        echo "404 - Page Not Found.";
+        // Check for routes like /edit-user/123
+        if (preg_match('#^/edit-user/(\d+)$#', $requestUri, $matches)) {
+            if (empty($_SESSION['user_id'])) {
+                header('Location: /login');
+                exit;
+            }
+            
+            $userId      = $matches[1];
+            $userDetails = $userModel->findUserById($userId);
+            if (!$userDetails) {
+                echo "Error: User not found.";
+                exit;
+            }
+
+            if ($requestMethod === 'POST') {
+                // e.g. $userController->updateUser($userId, $_POST);
+                // redirect or show success
+            } else {
+                // Show edit form
+                require __DIR__ . '/src/Views/Auth/edituser.view.php';
+            }
+        }
+        // Check for routes like /Auth/ViewUser/123
+        elseif (preg_match('#^/Auth/ViewUser/(\d+)$#', $requestUri, $matches)) {
+            if (empty($_SESSION['user_id'])) {
+                header('Location: /login');
+                exit;
+            }
+            
+            $userId      = $matches[1];
+            $userDetails = $userModel->findUserById($userId);
+            if (!$userDetails) {
+                echo "Error: User not found.";
+                exit;
+            }
+
+            if ($requestMethod === 'POST') {
+                // e.g. $userController->updateUser($userId, $_POST);
+                // redirect or show success
+            } else {
+                // Show user details
+                require __DIR__ . '/src/Views/Auth/ViewUser.php';
+            }
+        }
+        // Otherwise, 404
+        else {
+            http_response_code(404);
+            echo "404 - Page Not Found.";
+        }
         break;
 }
