@@ -100,6 +100,63 @@ switch ($requestUri) {
         require __DIR__ . '/src/Views/Auth/allusers.view.php';
         break;
 
+        // Example route that matches URLs like /edit-user/123
+case (preg_match('#^/edit-user/(\d+)$#', $requestUri, $matches) ? true : false):
+    if (empty($_SESSION['user_id'])) {
+        header('Location: /login');
+        exit;
+    }
+    
+    // Extract the user ID from the matched route
+    $userId = $matches[1];
+
+    // Fetch user details by ID
+    $userDetails = $userModel->findUserById($userId);
+    if (!$userDetails) {
+        echo "Error: User not found.";
+        exit;
+    }
+
+    // Handle GET or POST if you want
+    if ($requestMethod === 'POST') {
+        // For example, update the user
+        // $userController->updateUser($userId, $_POST);
+        // Then redirect or show a success message
+    } else {
+        // Show edit form
+        require __DIR__ . '/src/Views/Auth/edituser.view.php';
+    }
+    break;
+
+
+
+    // Example route that matches URLs like /edit-user/123
+case (preg_match('#^/Auth/ViewUser/(\d+)$#', $requestUri, $matches) ? true : false):
+    if (empty($_SESSION['user_id'])) {
+        header('Location: /login');
+        exit;
+    }
+    
+    // Extract the user ID from the matched route
+    $userId = $matches[1];
+
+    // Fetch user details by ID
+    $userDetails = $userModel->findUserById($userId);
+    if (!$userDetails) {
+        echo "Error: User not found.";
+        exit;
+    }
+
+    // Handle GET or POST if you want
+    if ($requestMethod === 'POST') {
+        // For example, update the user
+        // $userController->updateUser($userId, $_POST);
+        // Then redirect or show a success message
+    } else {
+        // Show edit form
+        require __DIR__ . '/src/Views/Auth/ViewUser.php';
+    }
+    break;
     default:
         http_response_code(404);
         echo "404 - Page Not Found.";

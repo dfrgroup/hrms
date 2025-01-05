@@ -28,7 +28,7 @@ ob_start();
                 : 'Not linked' ?>
           </td>
           <td class="py-2 px-4">
-            <a href="/edit-user?id=<?= htmlspecialchars($user['id']) ?>" 
+            <a href="/edit-user/<?= htmlspecialchars($user['id']) ?>" 
                class="text-blue-600 hover:underline">Edit</a>
             |
             <a href="/delete-user?id=<?= htmlspecialchars($user['id']) ?>" 
