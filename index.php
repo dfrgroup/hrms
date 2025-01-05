@@ -3,7 +3,7 @@
  * FILE: index.php
  * DESCRIPTION: Main entry point for the HRMS application. Handles configuration loading, 
  * database initialization, session setup, and routing logic.
- * 
+ *
  * USAGE:
  * - This file is the front controller and should be the only publicly accessible PHP file.
  * - Automatically loads required configurations and services.
@@ -42,11 +42,17 @@ if (session_status() === PHP_SESSION_NONE) {
 // 5. Routing Logic (Simple Example)
 $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
 
-// Route handling logic (expandable for future use)
 switch ($requestUri) {
     case '/':
-        echo "Welcome to HRMS!";
-        break;
+        // Check if user_id is set in the session (indicating a logged-in user)
+        if (empty($_SESSION['user_id'])) {
+            // If not logged in, redirect to login
+            header('Location: /login');
+            exit;
+        }
+        // If already logged in, redirect to dashboard
+        header('Location: /dashboard');
+        exit;
 
     case '/login':
         require __DIR__ . '/src/Views/login.view.php';
@@ -62,4 +68,3 @@ switch ($requestUri) {
         echo "404 - Page Not Found.";
         break;
 }
-
