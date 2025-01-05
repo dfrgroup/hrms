@@ -1,28 +1,54 @@
 <?php
-// FILE #3: config/database.php (PDO Connection)
+/**
+ * FILE: config/database.php
+ * DESCRIPTION: Database connection class for establishing and handling PDO connections.
+ * 
+ * USAGE:
+ * Include this file and instantiate the `database` class to get a PDO connection:
+ * Example:
+ *   require __DIR__ . '/config/database.php';
+ *   $db = new database();
+ *   $pdo = $db->connection();
+ * 
+ * Handles connection errors gracefully with user-friendly error messages
+ * and logs detailed exceptions for debugging purposes.
+ * 
+ * AUTHOR: Anthony Hudson / DFR Group LLC
+ * CREATED: 2025-01-04
+ * UPDATED: 2025-01-04
+ */
 
 class database {
+    // Database credentials
     private $host = "localhost";
     private $db_name = "hr";
     private $username = "root";
     private $password = "";
     public $conn;
 
+    /**
+     * Establish a database connection.
+     * 
+     * @return PDO|null Returns a PDO instance or null on failure.
+     */
     public function connection() {
         $this->conn = null;
 
         try {
+            // Data Source Name (DSN)
             $dsn = "mysql:host={$this->host};dbname={$this->db_name};charset=utf8mb4";
             $options = [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES   => false,
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Throw exceptions on errors
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,      // Fetch associative arrays by default
+                PDO::ATTR_EMULATE_PREPARES   => false,                 // Use native prepared statements
             ];
+
+            // Create a new PDO instance
             $this->conn = new PDO($dsn, $this->username, $this->password, $options);
 
         } catch (PDOException $e) {
-            // Log the full raw message for debugging
-            error_log("[DB Error] " . $e->getMessage());
+            // Log the detailed error for debugging
+            error_log("[DB Error] " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
 
             // Display a user-friendly message
             echo $this->humanReadableError($e);
@@ -32,6 +58,12 @@ class database {
         return $this->conn;
     }
 
+    /**
+     * Converts PDOException error codes into user-friendly messages.
+     * 
+     * @param PDOException $e The PDOException instance.
+     * @return string A user-friendly error message.
+     */
     private function humanReadableError(PDOException $e): string {
         $errorCode = $e->getCode();
 
@@ -54,7 +86,7 @@ class database {
             case 1146:
                 return "The specified database table does not exist. Please contact the administrator.";
 
-            // Fallback for any other error
+            // Default case for unhandled errors
             default:
                 return "An unexpected database error occurred: " . htmlspecialchars($e->getMessage());
         }
