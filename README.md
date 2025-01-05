@@ -38,7 +38,12 @@ The HRMS (Human Resource Management System) is a php-based application designed 
     npm install
     npm run dev
     ```
-3. Setup environment variables:
+3. Set Initial App Config:
+Update the config/app.php app configuration file to the following:
+    ```sh
+    env => production,
+    debug => false,  // Set to false in production
+    ```
 
 4. Migrate the database:
 
@@ -89,7 +94,6 @@ Key tables and their relationships:
 - ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black) JavaScript for dynamic functionality
 - ![jQuery](https://img.shields.io/badge/jQuery-0769AD?style=flat&logo=jquery&logoColor=white) jQuery for AJAX requests
 - ![AJAX](https://img.shields.io/badge/AJAX-0769AD?style=flat&logo=ajax&logoColor=white) AJAX for asynchronous operations
-- ![Blade](https://img.shields.io/badge/Blade-FF2D20?style=flat&logo=laravel&logoColor=white) Blade templates for dynamic views
 - ![Chart.js](https://img.shields.io/badge/Chart.js-F37826?style=flat&logo=chart-dot-js&logoColor=white) Charts.js for data visualizations
 - ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white) HTML for markup
 
@@ -98,7 +102,6 @@ Key tables and their relationships:
 
 - Ensure correct configuration of environment variables.
 - Regularly update dependencies to address security vulnerabilities.
-- Use Laravel's validation and sanitation mechanisms.
 
 ## Contribution
 
@@ -114,7 +117,7 @@ This project is licensed under the GNU General Public License v3.0 License. See 
 
 ## Contact
 
-For questions or support, contact [omar.7tech@gmail.com](mailto:omar.7tech@gmail.com).
+For questions or support, contact [anthony@dfrgrp.com](mailto:anthony@dfrgrp.com).
 
 ## Live Demo
 
