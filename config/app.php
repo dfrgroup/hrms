@@ -18,6 +18,7 @@ return [
     'env' => 'development',  // Environment: 'development', 'production', 'staging', etc.
     'debug' => true,         // Debug Mode: true = show detailed errors, false = user-friendly errors
     'timezone' => 'UTC',     // Timezone for the application
+    'base_url' => 'https://taskvera.com', // Adjust to your domain
 
     // Database Error Handling (custom logic can be added later)
     'database_error' => function ($e) {
