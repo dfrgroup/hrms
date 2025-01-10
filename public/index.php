@@ -1,13 +1,16 @@
 <?php
+// Define base path
+define('BASE_PATH', dirname(__DIR__));
+
 // Application Configuration
-$appConfig = require __DIR__ . '/config/app.php';
+$appConfig = require BASE_PATH . '/config/app.php';
 
 // Include Database and Models/Controllers
-require __DIR__ . '/config/database.php';
-require __DIR__ . '/src/Models/User.php';
-require __DIR__ . '/src/Controllers/LoginController.php';
-require __DIR__ . '/src/Controllers/UserController.php';
-require __DIR__ . '/src/Helpers/UserHelper.php';
+require BASE_PATH . '/config/database.php';
+require BASE_PATH . '/src/Models/User.php';
+require BASE_PATH . '/src/Controllers/LoginController.php';
+require BASE_PATH . '/src/Controllers/UserController.php';
+require BASE_PATH . '/src/Helpers/UserHelper.php';
 
 use App\Models\User;
 use App\Controllers\LoginController;
@@ -16,7 +19,7 @@ use App\Helpers\UserHelper;
 
 try {
     // Database Connection
-    $db = new database();
+    $db = new Database(); // Ensure the class name is correct
     $pdo = $db->connection();
 } catch (Exception $e) {
     error_log("[Initialization Error] " . $e->getMessage());
@@ -74,7 +77,7 @@ switch ($requestUri) {
             // Show the login form
             $errorMessage = $_SESSION['login_error'] ?? null;
             unset($_SESSION['login_error']);
-            require __DIR__ . '/src/Views/login.view.php';
+            require BASE_PATH . '/src/Views/login.view.php';
         }
         break;
 
@@ -91,7 +94,7 @@ switch ($requestUri) {
             echo "Error: User not found.";
             exit;
         }
-        require __DIR__ . '/src/Views/dashboard.view.php';
+        require BASE_PATH . '/src/Views/dashboard.view.php';
         break;
 
     case '/all-users':
@@ -101,7 +104,7 @@ switch ($requestUri) {
             exit;
         }
         $allUsers = $userController->getAllUsers();
-        require __DIR__ . '/src/Views/Auth/allusers.view.php';
+        require BASE_PATH . '/src/Views/Auth/allusers.view.php';
         break;
 
     default:
@@ -124,7 +127,7 @@ switch ($requestUri) {
                 // redirect or show success
             } else {
                 // Show edit form
-                require __DIR__ . '/src/Views/Auth/edituser.view.php';
+                require BASE_PATH . '/src/Views/Auth/edituser.view.php';
             }
         }
         // Check for routes like /Auth/ViewUser/123
@@ -146,7 +149,7 @@ switch ($requestUri) {
                 // redirect or show success
             } else {
                 // Show user details
-                require __DIR__ . '/src/Views/Auth/ViewUser.php';
+                require BASE_PATH . '/src/Views/Auth/ViewUser.php';
             }
         }
         // Otherwise, 404
