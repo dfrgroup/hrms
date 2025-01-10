@@ -71,6 +71,75 @@ CREATE TABLE Users (
     FOREIGN KEY (DataRetentionPolicy) REFERENCES DataRetentionPolicies(PolicyID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+INSERT INTO Users (
+    ID, 
+    Initials, 
+    DisplayName, 
+    Email, 
+    PasswordHash, 
+    PasswordSalt, 
+    last_login_at, 
+    FailedLoginAttempts, 
+    account_expires_at, 
+    UserProfilePhoto, 
+    UserType, 
+    CreationType, 
+    created_at, 
+    last_password_changed_at, 
+    PasswordPolicyID, 
+    PreferredLanguage, 
+    IsEnabled, 
+    Status, 
+    LogonAllowedHours, 
+    LogonIfClockedInOnly, 
+    ForcePasswordReset, 
+    CannotChangePassword, 
+    PasswordNeverExpires, 
+    LastIP, 
+    TwoFactorEnabled, 
+    TimeZone, 
+    last_failed_login_at, 
+    AccountLockout, 
+    AccountLockoutReason, 
+    CustomAttributes, 
+    LastLoginGeoLocation, 
+    DataRetentionPolicy
+) VALUES (
+    '6eb1db22-30f2-42f7-8382-be4e9b172829', -- ID
+    NULL,                                  -- Initials
+    NULL,                                  -- DisplayName
+    'anthonyhud843@outlook.com',           -- Email
+    '$2y$10$seEjkUliq3ThKxcfubnjCOyJz67tijm25PdJYPfcXNK...', -- PasswordHash
+    0x00000000000000000000000000000000,    -- PasswordSalt
+    NULL,                                  -- last_login_at
+    0,                                     -- FailedLoginAttempts
+    NULL,                                  -- account_expires_at
+    NULL,                                  -- UserProfilePhoto
+    'Admin',                               -- UserType
+    'Other',                               -- CreationType
+    '2025-01-05 13:19:53',                 -- created_at
+    NULL,                                  -- last_password_changed_at
+    NULL,                                  -- PasswordPolicyID
+    'en',                                  -- PreferredLanguage
+    1,                                     -- IsEnabled
+    'Active',                              -- Status
+    NULL,                                  -- LogonAllowedHours
+    0,                                     -- LogonIfClockedInOnly
+    0,                                     -- ForcePasswordReset
+    0,                                     -- CannotChangePassword
+    0,                                     -- PasswordNeverExpires
+    NULL,                                  -- LastIP
+    0,                                     -- TwoFactorEnabled
+    'UTC',                                 -- TimeZone
+    NULL,                                  -- last_failed_login_at
+    0,                                     -- AccountLockout
+    NULL,                                  -- AccountLockoutReason
+    NULL,                                  -- CustomAttributes
+    NULL,                                  -- LastLoginGeoLocation
+    NULL                                   -- DataRetentionPolicy
+);
+
 -- --------------------------
 -- INSERT SAMPLE DATA INTO PasswordPolicies
 -- --------------------------
