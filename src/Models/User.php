@@ -538,68 +538,32 @@ public function isRegionBlocked(string $ip): bool
      */
     public function logLoginAttempt(?string $userId, string $ip, string $failureReason, string $status, array $deviceInfo = []): void
     {
-        // Convert IP to VARBINARY(16) if needed, but since we're storing as CHAR(36), store as string
-        // If your schema stores IP as VARBINARY(16), keep inet_pton
-
-        $binaryIP = inet_pton($ip); // Assuming VARBINARY(16)
-
-        $sql = "
-            INSERT INTO LoginHistory 
-                (UserID, IP_Address, Device, Status, FailureReason, GeoLocation)
-            VALUES 
-                (:user, :ip, :dev, :st, :reason, :geo)
-        ";
-
-        $this->logError("[logLoginAttempt] SQL Statement: {$sql}");
-        $this->logError("[logLoginAttempt] Binding parameters: user={$userId}, ip={$ip}, device=" . ($deviceInfo['device'] ?? 'null') . ", status={$status}, reason={$failureReason}, geo=" . json_encode($deviceInfo['geo'] ?? null));
-
         try {
-            $stmt = $this->pdo->prepare($sql);
-
-            $geoJson = null;
-            if (!empty($deviceInfo['geo'])) {
-                // e.g., store as JSON {"country":"US","city":"New York"}
-                $geoJson = json_encode($deviceInfo['geo']);
-            }
-
-            // If not provided, fallback to the "browser" field or null
+            $geoJson = json_encode($deviceInfo['geo'] ?? null); // Handle optional geo data
             $device = $deviceInfo['device'] ?? ($deviceInfo['browser'] ?? null);
-
-            // Assign values to variables before binding
-            $userParam = $userId;
-            $ipParam = $binaryIP;
-            $devParam = $device;
-            $stParam = $status;
-            $reasonParam = ($status === 'Failed') ? $failureReason : null;
-            $geoParam = $geoJson;
-
-            // Bind parameters using variables
-            $stmt->bindParam(':user', $userParam, PDO::PARAM_STR);
-            $stmt->bindParam(':ip', $ipParam, PDO::PARAM_LOB); // Assuming VARBINARY(16)
-            $stmt->bindParam(':dev', $devParam, PDO::PARAM_STR);
-            $stmt->bindParam(':st', $stParam, PDO::PARAM_STR);
-            $stmt->bindParam(':reason', $reasonParam, PDO::PARAM_STR);
-            $stmt->bindParam(':geo', $geoParam, PDO::PARAM_STR);
-
+    
+            $sql = "
+                INSERT INTO LoginHistory 
+                    (UserID, IP_Address, Device, Status, FailureReason, GeoLocation)
+                VALUES 
+                    (:user, :ip, :dev, :status, :reason, :geo)
+            ";
+    
+            $stmt = $this->pdo->prepare($sql);
+    
+            $stmt->bindParam(':user', $userId, PDO::PARAM_STR);
+            $stmt->bindParam(':ip', $ip, PDO::PARAM_STR);
+            $stmt->bindParam(':dev', $device, PDO::PARAM_STR);
+            $stmt->bindParam(':status', $status, PDO::PARAM_STR);
+            $stmt->bindParam(':reason', $failureReason, PDO::PARAM_STR);
+            $stmt->bindParam(':geo', $geoJson, PDO::PARAM_STR);
+    
             $stmt->execute();
-
-            $this->logError("[logLoginAttempt] Login attempt logged successfully.");
         } catch (PDOException $e) {
-            // Safely access errorInfo elements
-            $errorInfo = $e->errorInfo;
-            $sqlState = $errorInfo[0] ?? 'Unknown SQLSTATE';
-            $driverErrorCode = $errorInfo[1] ?? 'Unknown Driver Error Code';
-            $driverErrorMessage = $errorInfo[2] ?? 'Unknown Driver Error Message';
-
-            // Log detailed exception information
-            $this->logError("[logLoginAttempt] PDOException: " . $e->getMessage());
-            $this->logError("[logLoginAttempt] SQLSTATE: " . $sqlState);
-            $this->logError("[logLoginAttempt] Driver Error Code: " . $driverErrorCode);
-            $this->logError("[logLoginAttempt] Driver Error Message: " . $driverErrorMessage);
-
-            // Depending on your logic, decide how to handle this
+            error_log("Failed to log login attempt: " . $e->getMessage());
         }
     }
+    
 
     /**
      * Check account status (IsEnabled, locked, suspended, expired, etc.).
