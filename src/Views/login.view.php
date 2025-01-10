@@ -105,6 +105,7 @@ if (!empty($_SESSION['user_id'])) {
                 id="email" 
                 name="email" 
                 type="email" 
+        autocomplete="off"
                 required 
                 class="pl-10 pr-3 py-2 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="you@example.com"
