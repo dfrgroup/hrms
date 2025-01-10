@@ -43,12 +43,11 @@ class Database {
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Enable exceptions
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false, // Use native prepared statements
+                PDO::ATTR_EMULATE_PREPARES => false,
             ];
-
-            // Create a new PDO instance
+            
             $this->conn = new PDO($dsn, $this->username, $this->password, $options);
-
+            
         } catch (PDOException $e) {
             // Log the detailed error for debugging
             error_log("[DB Connection Error] " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
