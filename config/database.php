@@ -21,9 +21,9 @@
 class Database {
     // Database credentials
     private string $host = "localhost";
-    private string $db_name = "hrms";
-    private string $username = "root";
-    private string $password = "";
+    private string $db_name = "prod";
+    private string $username = "prod-root";
+    private string $password = "32o481ydhs8FDSf234";
     private ?PDO $conn = null;
 
     /**
