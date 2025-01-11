@@ -144,15 +144,16 @@ class User
     {
         $sql = "
             SELECT 
-                users.ID AS id,
-                users.Email,
-                employees.first_name,
-                employees.middle_name,
-                employees.last_name
-            FROM Users
-            LEFT JOIN employees ON users.ID = employees.user_id
-            WHERE users.ID = :user_id
-            LIMIT 1
+    Users.ID AS id,
+    Users.Email,
+    employees.first_name,
+    employees.middle_name,
+    employees.last_name
+FROM Users
+LEFT JOIN employees ON Users.ID = employees.user_id
+WHERE Users.ID = :user_id
+LIMIT 1
+
         ";
 
         $this->logError("[findUserById] SQL Statement: {$sql}");
@@ -252,16 +253,17 @@ class User
     public function getAllUsers(): array
     {
         $sql = "
-            SELECT 
-                users.ID AS id,
-                users.Email,
-                employees.first_name,
-                employees.middle_name,
-                employees.last_name,
-                users.UserType
-            FROM Users
-            LEFT JOIN employees ON users.ID = employees.user_id
-            ORDER BY users.created_at DESC
+SELECT 
+    Users.ID AS id,
+    Users.Email,
+    employees.first_name,
+    employees.middle_name,
+    employees.last_name,
+    Users.UserType
+FROM Users
+LEFT JOIN employees ON Users.ID = employees.user_id
+ORDER BY Users.created_at DESC
+
         ";
 
         $this->logError("[getAllUsers] SQL Statement: {$sql}");
