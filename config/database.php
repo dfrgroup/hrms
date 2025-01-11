@@ -1,4 +1,7 @@
 <?php
+
+use Dotenv\Dotenv;
+
 class Database {
     private string $host;
     private string $db_name;
@@ -7,20 +10,19 @@ class Database {
     private ?PDO $conn = null;
 
     public function __construct() {
-        // Load environment-specific configuration
-        $env = $this->getEnvironment();
-
-        if ($env === 'production') {
-            $this->host = "localhost";
-            $this->db_name = "prod";
-            $this->username = "prod-root";
-            $this->password = "32o481ydhs8FDSf234";
-        } else { // Default to development
-            $this->host = "localhost";
-            $this->db_name = "hrms";
-            $this->username = "root";
-            $this->password = "";
+        // Load environment variables from .env file
+        if (file_exists(__DIR__ . '/../.env')) {
+            $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+            $dotenv->load();
         }
+
+        // Get environment-specific configuration
+        $env = $_ENV['APP_ENV'] ?? getenv('APP_ENV') ?? 'development';
+
+        $this->host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? 'localhost';
+        $this->db_name = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?? ($env === 'production' ? 'prod' : 'hrms');
+        $this->username = $_ENV['DB_USERNAME'] ?? getenv('DB_USERNAME') ?? ($env === 'production' ? 'prod-root' : 'root');
+        $this->password = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?? ($env === 'production' ? '32o481ydhs8FDSf234' : '');
     }
 
     public function connection(): PDO {
@@ -29,20 +31,18 @@ class Database {
         }
 
         try {
-            // Data Source Name (DSN)
             $dsn = "mysql:host={$this->host};dbname={$this->db_name};charset=utf8mb4";
             $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Enable exceptions
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ];
 
             $this->conn = new PDO($dsn, $this->username, $this->password, $options);
         } catch (PDOException $e) {
-            // Log the detailed error for debugging
-            error_log("[DB Connection Error] " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
+            error_log("[DB Connection Error] " . $e->getMessage());
 
-            // Display a user-friendly message with debugging information
+            // Display error details in development mode
             echo $this->humanReadableError($e->getMessage());
             exit;
         }
@@ -50,12 +50,8 @@ class Database {
         return $this->conn;
     }
 
-    private function getEnvironment(): string {
-        return getenv('APP_ENV') ?: 'development';
-    }
-
     private function humanReadableError(string $errorMessage): string {
-        $env = $this->getEnvironment();
+        $env = $_ENV['APP_ENV'] ?? getenv('APP_ENV') ?? 'development';
         if ($env === 'development') {
             return "
                 <h1>Database Connection Error</h1>
