@@ -2,33 +2,36 @@
 /**
  * FILE: config/Database.php
  * DESCRIPTION: Database connection class for establishing and handling PDO connections.
- * 
- * USAGE:
- * Include this file and instantiate the `Database` class to get a PDO connection:
- * Example:
- *   require __DIR__ . '/config/Database.php';
- *   $db = new Database();
- *   $pdo = $db->getConnection();
- * 
- * Handles connection errors gracefully with user-friendly error messages
- * and logs detailed exceptions for debugging purposes.
- * 
- * AUTHOR: Anthony Hudson / DFR Group LLC
- * CREATED: 2025-01-04
- * UPDATED: 2025-01-04
+ * Dynamically switches between development and production environments.
  */
 
 class Database {
-    // Database credentials
-    private string $host = "localhost";
-    private string $db_name = "prod";
-    private string $username = "prod-root";
-    private string $password = "32o481ydhs8FDSf234";
+    private string $host;
+    private string $db_name;
+    private string $username;
+    private string $password;
     private ?PDO $conn = null;
+
+    public function __construct() {
+        // Load environment-specific configuration
+        $env = $this->getEnvironment();
+
+        if ($env === 'production') {
+            $this->host = "localhost";
+            $this->db_name = "prod";
+            $this->username = "prod-root";
+            $this->password = "32o481ydhs8FDSf234";
+        } else { // Default to development
+            $this->host = "localhost";
+            $this->db_name = "hrms";
+            $this->username = "root";
+            $this->password = "";
+        }
+    }
 
     /**
      * Establish a database connection.
-     * 
+     *
      * @return PDO The PDO instance.
      * @throws Exception If connection fails.
      */
@@ -45,9 +48,8 @@ class Database {
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
             ];
-            
+
             $this->conn = new PDO($dsn, $this->username, $this->password, $options);
-            
         } catch (PDOException $e) {
             // Log the detailed error for debugging
             error_log("[DB Connection Error] " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
@@ -61,12 +63,22 @@ class Database {
     }
 
     /**
+     * Get the current environment.
+     *
+     * @return string 'production', 'development', etc.
+     */
+    private function getEnvironment(): string {
+        // Set the environment manually or fetch from an environment variable
+        // Example: Set in .htaccess or use getenv()
+        return getenv('APP_ENV') ?: 'development';
+    }
+
+    /**
      * Returns a user-friendly error message without exposing sensitive details.
-     * 
+     *
      * @return string The error message.
      */
     private function humanReadableError(): string {
-        // Generic error message to display to users
         return "An unexpected error occurred while connecting to the database. Please try again later.";
     }
 }
