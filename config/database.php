@@ -1,10 +1,4 @@
 <?php
-/**
- * FILE: config/Database.php
- * DESCRIPTION: Database connection class for establishing and handling PDO connections.
- * Dynamically switches between development and production environments.
- */
-
 class Database {
     private string $host;
     private string $db_name;
@@ -29,12 +23,6 @@ class Database {
         }
     }
 
-    /**
-     * Establish a database connection.
-     *
-     * @return PDO The PDO instance.
-     * @throws Exception If connection fails.
-     */
     public function connection(): PDO {
         if ($this->conn !== null) {
             return $this->conn;
@@ -54,31 +42,30 @@ class Database {
             // Log the detailed error for debugging
             error_log("[DB Connection Error] " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
 
-            // Display a user-friendly message without exposing sensitive details
-            echo $this->humanReadableError();
+            // Display a user-friendly message with debugging information
+            echo $this->humanReadableError($e->getMessage());
             exit;
         }
 
         return $this->conn;
     }
 
-    /**
-     * Get the current environment.
-     *
-     * @return string 'production', 'development', etc.
-     */
     private function getEnvironment(): string {
-        // Set the environment manually or fetch from an environment variable
-        // Example: Set in .htaccess or use getenv()
         return getenv('APP_ENV') ?: 'development';
     }
 
-    /**
-     * Returns a user-friendly error message without exposing sensitive details.
-     *
-     * @return string The error message.
-     */
-    private function humanReadableError(): string {
+    private function humanReadableError(string $errorMessage): string {
+        $env = $this->getEnvironment();
+        if ($env === 'development') {
+            return "
+                <h1>Database Connection Error</h1>
+                <p><strong>Environment:</strong> $env</p>
+                <p><strong>Database Name:</strong> {$this->db_name}</p>
+                <p><strong>Host:</strong> {$this->host}</p>
+                <p><strong>Error Message:</strong> $errorMessage</p>
+            ";
+        }
+
         return "An unexpected error occurred while connecting to the database. Please try again later.";
     }
 }
