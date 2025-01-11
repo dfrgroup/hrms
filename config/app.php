@@ -12,21 +12,31 @@
  * CREATED: 2025-01-04
  */
 
+// Detect the current environment
+$environment = ($_SERVER['HTTP_HOST'] === '127.0.0.1' || $_SERVER['HTTP_HOST'] === 'localhost') 
+    ? 'development' 
+    : 'production';
+
+// Dynamically set the base URL
+$base_url = ($environment === 'development') 
+    ? 'http://127.0.0.1' 
+    : 'https://taskvera.com';
+
 return [
     // General Application Info
     'name' => 'HRMS',        // Application Name
-    'env' => 'development',  // Environment: 'development', 'production', 'staging', etc.
-    'debug' => true,         // Debug Mode: true = show detailed errors, false = user-friendly errors
+    'env' => $environment,   // Environment: 'development', 'production', etc.
+    'debug' => $environment === 'development', // Debug Mode: true in development, false in production
     'timezone' => 'UTC',     // Timezone for the application
-    'base_url' => 'https://taskvera.com', // Adjust to your domain
+    'base_url' => $base_url, // Dynamically set base URL
 
     // Database Error Handling (custom logic can be added later)
-    'database_error' => function ($e) {
+    'database_error' => function ($e) use ($environment) {
         // Log the exact error for debugging purposes
         error_log("[DB Error] " . $e->getMessage());
 
         // Friendly user-facing error
-        return (self::getConfig('debug'))
+        return $environment === 'development'
             ? "Detailed Debug Info: " . htmlspecialchars($e->getMessage())
             : "A database error occurred. Please contact support.";
     },
