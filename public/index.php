@@ -15,6 +15,8 @@ require BASE_PATH . '/src/Models/User.php';
 require BASE_PATH . '/src/Controllers/LoginController.php';
 require BASE_PATH . '/src/Controllers/UserController.php';
 require BASE_PATH . '/src/Helpers/UserHelper.php';
+require BASE_PATH . '/vendor/autoload.php';
+
 
 use App\Models\User;
 use App\Controllers\LoginController;
